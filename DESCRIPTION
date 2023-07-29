@@ -13,3 +13,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/gabertol/isopachR
+BugReports: https://github.com/gabertol/isopachR/issues
