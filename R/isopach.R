@@ -71,17 +71,14 @@ isopach <- function(database,
   # Geostatistics
 
 
-  kriege<-automap::autoKrige(thick~1,BD_SP,grd)$krige_output
-  idw1<- gstat::idw(thick~1,BD_SP,grd)
-
   if(method=="idw"){
-    interpolation<-idw1
+    interpolator<-automap::autoKrige(thick~1,BD_SP,grd)$krige_output
   }
   else{
-    interpolation<-kriege
+    interpolator<-gstat::idw(thick~1,BD_SP,grd)
   }
 
-  interpolation %>%
+interpolation<-interpolator %>%
     st_as_sf() %>%
     st_intersection(.,bbox) %>%
     dplyr::select(var1.pred) %>%
