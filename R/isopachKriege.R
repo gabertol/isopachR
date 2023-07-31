@@ -45,12 +45,9 @@ if(isTRUE(is.character(bbox_dir))){
 }
 else{
 
-  bbox<-tribble(~X,~Y,
-                     max(BD$X),max(BD$Y),
-                     max(BD$X),min(BD$Y),
-                     min(BD$X),max(BD$Y),
-                     min(BD$X),min(BD$Y)) %>%
+  bbox<-BD %>%
     st_as_sf(coords=c("X","Y"),crs=3857) %>%
+    st_union() %>%
     st_convex_hull()
 
 }
