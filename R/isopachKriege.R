@@ -41,9 +41,7 @@ BD_SP<-as(BD %>% st_as_sf(coords=c("X","Y"),crs=3857), "Spatial")
 if(isTRUE(is.character(bbox_dir))){
 
   bbox<-read_sf(bbox_dir) %>%
-    st_transform(crs=3857) %>%
-    st_union() %>%
-    st_convex_hull()
+    st_transform(crs=3857)
 }
 else{
 
