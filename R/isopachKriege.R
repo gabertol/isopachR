@@ -17,7 +17,8 @@ isopachKriege <- function(database,
                           crs=4326,
                           bbox_dir=NULL,
                           DIR=NULL,
-                          cell_size=5000) {
+                          cell_size=5000,
+                          GGPLOT_READY=FALSE) {
 # Column names
 
 
@@ -75,30 +76,37 @@ kriege<-automap::autoKrige(thick~1,BD_SP,grd)$krige_output %>%
   st_as_sf() %>%
   st_intersection(.,bbox) %>%
   dplyr::select(var1.pred) %>%
-  cbind(.,st_coordinates(.)) #%>%
-  #dplyr::select(X,Y,Z=var1.pred) %>%
-#  st_transform(crs=4326) %>%
- # st_drop_geometry() #%>%
-  #terra::rast(.,type="xyz")
+  cbind(.,st_coordinates(.)) %>%
+  dplyr::select(X,Y,Z=var1.pred) %>%
+  st_drop_geometry() %>%
+  terra::rast(.,type="xyz")
 
+# Reconvert to CRS as raster
 
+ISO<-raster::raster(kriege)
+crs(ISO)<-CRS('+init=EPSG:3857')
+ISO_reproject<-projectRaster(ISO, crs = crs)
 
-# ISO1<-raster::raster(raster)
-#
-# crs(ISO1)<-CRS('+init=EPSG:3857')
-# ISO2<-projectRaster(ISO1, crs = 4326)
-# KKK<-rasterToPoints(ISO2) %>% as_tibble() %>% dplyr::select(X=x,Y=y,Z=3)
+# As dataframe
+RASTER<-rasterToPoints(ISO_reproject) %>%
+  as_tibble() %>%
+  dplyr::select(X=x,Y=y,Z=3)
 
 
 # Saving raster
 
 if(isTRUE(is.character(DIR))){
 
-  terra::writeRaster(kriege,DIR,overwrite=TRUE)
+  terra::writeRaster(RASTER,DIR,overwrite=TRUE)
 }
 else{}
 
 # return
-return(kriege)
+if_else(isTRUE(GGPLOT_READY)){
+  return(ISO_reproject)
+}
+else{
+return(RASTER)}
+
 
 }
