@@ -44,6 +44,7 @@ if(isTRUE(is.character(bbox_dir))){
   bbox<-read_sf(bbox_dir) %>%
     st_transform(crs=3857)
 }
+
 else{
 
   bbox<-BD %>%
@@ -93,13 +94,15 @@ RASTER<-rasterToPoints(ISO_reproject) %>%
   dplyr::select(X=x,Y=y,Z=3)
 
 
-# Saving raster
+
+# Return
 
 if(isTRUE(is.character(DIR))){
-
+  # Saving raster
   terra::writeRaster(ISO_reproject,DIR,overwrite=TRUE)
 }
 else{
+
   # return as DF for ggplot
   if(isTRUE(GGPLOT_READY)){
     return(RASTER)
@@ -109,5 +112,4 @@ else{
     return(ISO_reproject)}
 
 }
-
 }

@@ -57,7 +57,9 @@ BD<-tribble(~X,~Y,~well,~thick,
 
 teste<-write.csv()
 devtools::load_all()
-BD %>% isopachR::isopachKriege()
+BD %>% 
+  isopachR::isopachKriege(crs=4326,GGPLOT_READY = FALSE)%>% 
+  plot()
 
 ```
 
