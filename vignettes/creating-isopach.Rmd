@@ -17,3 +17,47 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(isopachR)
 ```
+
+
+
+# Dummy dataset
+```{r}
+BD<-tribble(~X,~Y,
+            -50,-25,
+            -49,-24,
+            -49.5,-26,
+            -51.5,-20.5)
+```
+
+# Exploring convertPast function
+```{r}
+
+BD %>% 
+  isopachR::convertPast(age=100) %>% 
+  isopachR::convertPast(age=105)
+  
+```
+# Exploring isopachKriege and isopachIWD
+
+```{r}
+
+BD<-tribble(~X,~Y,~well,~thick,
+            -50,-25,"A",25,
+            -49,-24,"B",24.1,
+            -49.5,-26,"C",28.2,
+            -51.5,-20.5,"D",22.1,
+            -52.1,-21.3,"E",23.4,
+            -49.2,-22.1,"F",22.1,
+            -47.9,-24.2,"G",19.4,
+            -53.2,-25.9,"H",8.1,
+            -51.2,-27.1,"I",21.9,
+            -52.9,-25.1,"H",29.3)
+
+
+
+teste<-write.csv()
+devtools::load_all()
+BD %>% isopachR::isopachKriege()
+
+```
+
