@@ -1,4 +1,4 @@
-#' Isopachs with inverse distance weight methods
+#' Title
 #'
 #' @param variables
 #'
@@ -6,7 +6,8 @@
 #' @export
 #'
 #' @examples
-isopachKriege <- function(database,
+isopach <- function(database,
+                    method="kriege",
                           X_name="X",
                           Y_name="Y",
                           well_name="well",
@@ -15,8 +16,7 @@ isopachKriege <- function(database,
                           bbox_dir=NULL,
                           DIR=NULL,
                           cell_size=5000,
-                          GGPLOT_READY=FALSE) {
-  # Column names
+                          GGPLOT_READY=FALSE) {# Column names
 
 
   BD<-
@@ -41,6 +41,7 @@ isopachKriege <- function(database,
     bbox<-read_sf(bbox_dir) %>%
       st_transform(crs=3857)
   }
+
   else{
 
     bbox<-BD %>%
@@ -57,8 +58,7 @@ isopachKriege <- function(database,
     st_as_sfc() %>%
     st_make_grid(
       cellsize = c(cell_size, cell_size),
-      what = "centers"
-    ) %>%
+      what = "centers") %>%
     st_as_sf() %>%
     cbind(., st_coordinates(.))
 
@@ -69,10 +69,22 @@ isopachKriege <- function(database,
 
 
   # Geostatistics
-  kriege<-gstat::idw(thick~1,BD_SP,grd) %>%
+
+
+  kriege<-automap::autoKrige(thick~1,BD_SP,grd)$krige_output
+  idw1<- gstat::idw(thick~1,BD_SP,grd)
+
+  if(method=="idw"){
+    interpolation<-idw1
+  }
+  else{
+    interpolation<-kriege
+  }
+
+  interpolation %>%
     st_as_sf() %>%
-    st_intersection(.,bbox) %>% d
-    dplyr::select(var1.pred)%>%
+    st_intersection(.,bbox) %>%
+    dplyr::select(var1.pred) %>%
     cbind(.,st_coordinates(.)) %>%
     dplyr::select(X,Y,Z=var1.pred) %>%
     st_drop_geometry() %>%
@@ -80,7 +92,7 @@ isopachKriege <- function(database,
 
   # Reconvert to CRS as raster
 
-  ISO<-raster::raster(kriege)
+  ISO<-raster::raster(interpolation)
   crs(ISO)<-CRS('+init=EPSG:3857')
   ISO_reproject<-projectRaster(ISO, crs = crs)
 
@@ -89,20 +101,26 @@ isopachKriege <- function(database,
     as_tibble() %>%
     dplyr::select(X=x,Y=y,Z=3)
 
+  # Logical for return
 
-  # Saving raster
+  if(isTRUE(GGPLOT_READY)){
+    #as DF for ggplot
+    RETURN<-(RASTER)
+
+  }
+  else{
+    # return as raster
+    RETURN<-(ISO_reproject)
+  }
+
+  # Return
 
   if(isTRUE(is.character(DIR))){
-
+    # Saving raster
     terra::writeRaster(ISO_reproject,DIR,overwrite=TRUE)
   }
   else{
-    # return as DF for ggplot
-    if(isTRUE(GGPLOT_READY)){
-      return(RASTER)
-    }
-    # return as raster
-    else{
-      return(ISO_reproject)}
 
-  }
+    return(RETURN)}
+
+}
