@@ -102,7 +102,7 @@ if(isTRUE(is.character(DIR))){
 else{}
 
 # return
-if_else(isTRUE(GGPLOT_READY)){
+if(isTRUE(GGPLOT_READY)){
   return(ISO_reproject)
 }
 else{
