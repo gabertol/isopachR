@@ -14,7 +14,8 @@ Depends:
          sp,
          automap,
          terra,
-         raster
+         raster,
+         gstat
 Encoding: UTF-8
 LazyData: true
 Suggests: 

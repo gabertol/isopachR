@@ -97,16 +97,17 @@ RASTER<-rasterToPoints(ISO_reproject) %>%
 
 if(isTRUE(is.character(DIR))){
 
-  terra::writeRaster(RASTER,DIR,overwrite=TRUE)
-}
-else{}
-
-# return
-if(isTRUE(GGPLOT_READY)){
-  return(ISO_reproject)
+  terra::writeRaster(ISO_reproject,DIR,overwrite=TRUE)
 }
 else{
-return(RASTER)}
+  # return as DF for ggplot
+  if(isTRUE(GGPLOT_READY)){
+    return(RASTER)
+  }
+  # return as raster
+  else{
+    return(ISO_reproject)}
 
+}
 
 }
