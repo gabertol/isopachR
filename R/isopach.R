@@ -1,8 +1,18 @@
-#' Title
+#' Isopach via kriege or inverse distance weight methods of spatial intepolation
 #'
-#' @param variables
+#' @param a dataframe
+#' @param method methods of spatial interpolation, kriege as default. Currently includes: kriege and idw (inverse distance weight)
+#' @param X_name name of the column containing longitude coordinates
+#' @param Y_name name of the column containing latitude coordinates
+#' @param well_name name of a particular well or sample
+#' @param thick_name name of the column containing a thickness or other feature to interpolate
+#' @param crs coordinate reference system of the coordinates and final output
+#' @param bbox_dir direction of the bounding box (shapefile) used for the grid size and croping the final output. (Empty means using the limits of the dataset to create the grid)
+#' @param DIR direction to save a tif of the output (empty means no saving and returning as dataframe ou raster (see GGPLOT_READY))
+#' @param cell_size the size of each cell for the grid in m (default=5000)
+#' @param GGPLOT_READY a logical gate for the return, TRUE means a raster and the default FALSE means a dataframe data which runs smoother for ggplots
 #'
-#' @return
+#' @return an spatial interpolation as raster or dataframe or tiff file
 #' @export
 #'
 #' @examples
@@ -71,7 +81,7 @@ isopach <- function(database,
   # Geostatistics
 
 
-  if(method=="idw"){
+  if(method=="kriege"){
     interpolator<-automap::autoKrige(thick~1,BD_SP,grd)$krige_output
   }
   else{
